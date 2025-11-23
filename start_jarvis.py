@@ -5,10 +5,14 @@ JARVIS PORTABLE - Version Optimisée Laptop
 
 Version allégée de JARVIS optimisée pour ordinateur portable avec:
 - Gestion intelligente de la batterie (4 profils adaptatifs)
-- Agents essentiels seulement (6 agents vs 10+ master)
+- 9 agents essentiels + experts (vs 10+ master)
 - Intelligence hybride (Claude Sonnet 4.5 + Ollama gpt-oss:20b)
 - Consommation RAM réduite (1.2GB vs 6.5GB master)
 - Autonomie batterie 2.6x meilleure
+
+Agents disponibles:
+- Monitor, Indexer, Learner, Coder, Reviewer (essentiels)
+- Backend Expert, Data Engineer, DevOps SRE, AI Engineer (experts)
 
 Author: JARVIS Portable System
 Date: 2025-11-23
@@ -42,6 +46,12 @@ from agents.coder_agent import CoderAgent
 from agents.reviewer_agent import CodeReviewerAgent
 from agents.indexer_agent import MemoryIndexerAgent
 from agents.learner_agent import LearningAgent
+
+# Agents experts (nouveaux!)
+from agents.backend_expert_agent import BackendExpertAgent
+from agents.data_engineer_agent import DataEngineerAgent
+from agents.devops_sre_agent import DevOpsSREAgent
+from agents.ai_engineer_agent import AIEngineerAgent
 
 
 class JARVISPortable:
@@ -145,7 +155,30 @@ class JARVISPortable:
             self.agents['reviewer'] = reviewer
             print("  [OK] Reviewer")
 
-        # Note: 6ème agent serait ResearchAgent mais pas encore créé
+        # Agents Experts (6-9): Disponibles en PERFORMANCE ou sur demande
+        if agents_count >= 6:
+            # Agent 6: Backend Expert
+            backend_expert = BackendExpertAgent("BackendExpert", brain=self.brain)
+            self.agents['backend_expert'] = backend_expert
+            print("  [OK] Backend Expert (FastAPI/PostgreSQL/Neo4j)")
+
+        if agents_count >= 7:
+            # Agent 7: Data Engineer
+            data_engineer = DataEngineerAgent("DataEngineer", brain=self.brain)
+            self.agents['data_engineer'] = data_engineer
+            print("  [OK] Data Engineer (dbt/Modern Data Stack)")
+
+        if agents_count >= 8:
+            # Agent 8: DevOps SRE
+            devops_sre = DevOpsSREAgent("DevOpsSRE", brain=self.brain)
+            self.agents['devops_sre'] = devops_sre
+            print("  [OK] DevOps SRE (Kubernetes/GitOps)")
+
+        if agents_count >= 9:
+            # Agent 9: AI Engineer
+            ai_engineer = AIEngineerAgent("AIEngineer", brain=self.brain)
+            self.agents['ai_engineer'] = ai_engineer
+            print("  [OK] AI Engineer (LLM/RAG/Agents)")
 
     async def start_production(self):
         """Lance le système en mode production"""

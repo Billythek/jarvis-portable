@@ -180,31 +180,31 @@ class BatteryManager:
 
         configs = {
             "PERFORMANCE": {
-                "agents_actifs": 6,           # Tous les agents essentiels
+                "agents_actifs": 9,           # TOUS les agents (5 essentiels + 4 experts)
                 "intelligence": "hybrid",     # Claude + Ollama
                 "use_claude_sdk": True,
                 "use_ollama": True,
                 "cache_ttl": 3600,            # 1h
                 "monitoring_interval": 60,    # 1 minute
-                "ram_target_mb": 2500,
+                "ram_target_mb": 3000,        # Augmenté pour 9 agents
                 "cpu_limit_percent": 80,
-                "description": "Performance maximale (secteur ou >80%)"
+                "description": "Performance maximale - Tous les agents experts actifs (secteur ou >80%)"
             },
 
             "BALANCED": {
-                "agents_actifs": 4,           # Monitor, Indexer, Coder, Learner
+                "agents_actifs": 5,           # 5 agents essentiels (Monitor, Indexer, Learner, Coder, Reviewer)
                 "intelligence": "hybrid_prefer_ollama",
                 "use_claude_sdk": True,       # Disponible mais non préféré
                 "use_ollama": True,
                 "cache_ttl": 14400,           # 4h
                 "monitoring_interval": 120,   # 2 minutes
-                "ram_target_mb": 1200,
+                "ram_target_mb": 1500,        # Ajusté pour 5 agents
                 "cpu_limit_percent": 50,
-                "description": "Équilibré (40-80% batterie)"
+                "description": "Équilibré - Agents essentiels seulement (40-80% batterie)"
             },
 
             "ECO": {
-                "agents_actifs": 2,           # Monitor + essentiel
+                "agents_actifs": 2,           # Monitor + Indexer minimal
                 "intelligence": "ollama_only",
                 "use_claude_sdk": False,      # Désactivé pour économie
                 "use_ollama": True,
@@ -212,7 +212,7 @@ class BatteryManager:
                 "monitoring_interval": 300,   # 5 minutes
                 "ram_target_mb": 800,
                 "cpu_limit_percent": 30,
-                "description": "Économie d'énergie (20-40% batterie)"
+                "description": "Économie d'énergie - Monitoring minimal (20-40% batterie)"
             },
 
             "CRITICAL": {
@@ -224,7 +224,7 @@ class BatteryManager:
                 "monitoring_interval": 600,   # 10 minutes
                 "ram_target_mb": 500,
                 "cpu_limit_percent": 15,
-                "description": "Critique - Sauvegarde et arrêt (<20% batterie)"
+                "description": "Critique - Sauvegarde et arrêt automatique (<20% batterie)"
             }
         }
 
