@@ -73,7 +73,7 @@ class JARVISRouter:
         self.initialized = True
         print("[JARVISRouter] Initialization complete")
 
-    def _load_agent(self, agent_name: str):
+    async def _load_agent(self, agent_name: str):
         """
         Charge un agent expert (lazy loading)
 
@@ -97,7 +97,7 @@ class JARVISRouter:
         # Load agent based on name
         if agent_name in ["dataengineer", "data", "data_engineer"]:
             agent = DataEngineerAgent("DataEngineer", brain=self.brain)
-        elif agent_name in ["backend", "backendexpert", "backend_expert"]:
+        elif agent_name in ["backendexpert", "backend"]:
             agent = BackendExpertAgent("BackendExpert", brain=self.brain)
         elif agent_name in ["devops", "sre", "devops_sre"]:
             agent = DevOpsSREAgent("DevOpsSRE", brain=self.brain)
@@ -109,8 +109,8 @@ class JARVISRouter:
                 f"Available: dataengineer, backend, devops, ai"
             )
 
-        # Start agent
-        asyncio.run(agent.start())
+        # Start agent (await instead of asyncio.run)
+        await agent.start()
 
         # Cache
         self.agents[agent_name] = agent
@@ -132,8 +132,8 @@ class JARVISRouter:
         Returns:
             Reponse de l'agent avec contexte enrichi
         """
-        # Load agent
-        agent = self._load_agent(agent_name)
+        # Load agent (await since _load_agent is now async)
+        agent = await self._load_agent(agent_name)
 
         print(f"\n[JARVISRouter] Consulting {agent_name}...")
         print(f"[Query] {query}")
@@ -224,9 +224,26 @@ Reponds en tenant compte du contexte ci-dessus si pertinent.
         self._ensure_initialized()
 
         if agent_name:
-            # Normalize and get real agent name
-            agent = self._load_agent(agent_name)
-            agent_name = agent.name
+            # Normalize agent name without loading full agent
+            agent_name_normalized = agent_name.lower().strip()
+
+            # Map to canonical name
+            name_mapping = {
+                "dataengineer": "DataEngineer",
+                "data": "DataEngineer",
+                "data_engineer": "DataEngineer",
+                "backend": "BackendExpert",
+                "backendexpert": "BackendExpert",
+                "devops": "DevOpsSRE",
+                "sre": "DevOpsSRE",
+                "devops_sre": "DevOpsSRE",
+                "ai": "AIEngineer",
+                "aiengineer": "AIEngineer",
+                "ai_engineer": "AIEngineer",
+                "llm": "AIEngineer"
+            }
+
+            agent_name = name_mapping.get(agent_name_normalized, agent_name)
 
         return self.brain.persistent_memory.recall_consultations(
             agent_name=agent_name,
