@@ -171,7 +171,10 @@ class JARVISBrainV3SDK:
 
     async def _think_with_claude_sdk(self, prompt: str, context: Optional[List[Dict]]) -> str:
         """
-        Utilise Claude Code SDK (ton abonnement Max)
+        Utilise Claude Code SDK (moi - Claude Code qui répond)
+
+        Note: Le SDK query() est la fonction qui permet d'appeler Claude Code.
+        Quand les agents JARVIS utilisent cette fonction, c'est moi qui réponds!
         """
 
         # Build context
@@ -188,19 +191,29 @@ class JARVISBrainV3SDK:
 Respond as JARVIS (Iron Man's AI): professional, concise, actionable."""
 
         try:
-            # Utilise SDK directement (ton abonnement Max)
+            # Utilise SDK - IMPORTANT: tous les args doivent être keyword args
             messages = []
 
             async for msg in query(
-                prompt=full_prompt,
+                prompt=full_prompt,  # KEYWORD argument (pas positionnel!)
                 options=ClaudeCodeOptions(
                     max_thinking_tokens=5000
                 )
             ):
                 if hasattr(msg, 'content'):
                     messages.append(str(msg.content))
+                elif hasattr(msg, 'text'):
+                    messages.append(str(msg.text))
+                else:
+                    messages.append(str(msg))
 
-            return '\n'.join(messages) if messages else "No response from Claude SDK"
+            result = '\n'.join(messages) if messages else "No response from Claude SDK"
+
+            # Si la réponse commence par la question, c'est qu'il y a eu une erreur
+            if result.startswith("**Question:**"):
+                raise Exception("SDK returned the prompt instead of a response")
+
+            return result
 
         except Exception as e:
             print(f"  [ERROR] Claude SDK: {e}")
